@@ -63,3 +63,12 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# Para criar formulários bonitos e semânticos de forma simples
+gem 'simple_form'
+
+# Para autenticação de usuários (login, senha, etc.) de forma rápida e segura
+gem 'devise'
+
+# Adiciona anotações nos seus models com o esquema do banco de dados, super útil!
+gem 'annotate'
