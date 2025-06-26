@@ -1,49 +1,37 @@
 class TodoListsController < ApplicationController
+  before_action :authenticate_user! # Exige login
   before_action :set_todo_list, only: %i[ show edit update destroy ]
 
-  # GET /todo_lists or /todo_lists.json
   def index
-    @todo_lists = TodoList.all
+    @todo_lists = current_user.todo_lists # Apenas listas do usuário logado
   end
 
-  # GET /todo_lists/1 or /todo_lists/1.json
   def show
   end
 
-  # GET /todo_lists/new
   def new
     @todo_list = TodoList.new
   end
 
-  # GET /todo_lists/1/edit
   def edit
   end
 
-  # POST /todo_lists or /todo_lists.json
   def create
-    @todo_list = TodoList.new(todo_list_params)
+    @todo_list = current_user.todo_lists.build(todo_list_params) # Associa ao usuário
 
-    respond_to do |format|
-      if @todo_list.save
-        format.html { redirect_to @todo_list, notice: "Todo list was successfully created." }
-        format.json { render :show, status: :created, location: @todo_list }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @todo_list.errors, status: :unprocessable_entity }
-      end
+    if @todo_list.save
+      redirect_to @todo_list, notice: "Todo list was successfully created."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /todo_lists/1 or /todo_lists/1.json
   def update
-    respond_to do |format|
-      if @todo_list.update(todo_list_params)
-        format.html { redirect_to @todo_list, notice: "Todo list was successfully updated." }
-        format.json { render :show, status: :ok, location: @todo_list }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @todo_list.errors, status: :unprocessable_entity }
-      end
+    if @todo_list.update(todo_list_params)
+      redirect_to @todo_list, notice: "Todo list was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -51,10 +39,7 @@ class TodoListsController < ApplicationController
   def destroy
     @todo_list.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to todo_lists_path, status: :see_other, notice: "Todo list was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    redirect_to todo_lists_path, status: :see_other, notice: "Todo list was successfully destroyed."
   end
 
   private
