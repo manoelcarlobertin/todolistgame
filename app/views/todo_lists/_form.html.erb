@@ -1,32 +1,19 @@
-<%= form_with(model: todo_list, class: "contents") do |form| %>
-  <% if todo_list.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(todo_list.errors.count, "error") %> prohibited this todo_list from being saved:</h2>
+<%= simple_form_for(todo_list, html: { class: "space-y-6" }) do |f| %>
+  <%= f.error_notification %>
+  <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
-      <ul class="list-disc ml-6">
-        <% todo_list.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="my-5">
-    <%= form.label :title %>
-    <%= form.text_field :title, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": todo_list.errors[:title].none?, "border-red-400 focus:outline-red-600": todo_list.errors[:title].any?}] %>
+  <div>
+    <%= f.input :title, wrapper_html: { class: 'mb-4' }, input_html: {
+      class: 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+      } %>
+      <%= f.input :description, as: :text, wrapper_html: { class: 'mb-4' }, input_html: { rows: 4,
+        class: 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+        } %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :description %>
-    <%= form.textarea :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": todo_list.errors[:description].none?, "border-red-400 focus:outline-red-600": todo_list.errors[:description].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :user_id %>
-    <%= form.text_field :user_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": todo_list.errors[:user_id].none?, "border-red-400 focus:outline-red-600": todo_list.errors[:user_id].any?}] %>
-  </div>
-
-  <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  <div class="form-actions">
+    <%= f.button :submit,
+      class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+      %>
   </div>
 <% end %>
