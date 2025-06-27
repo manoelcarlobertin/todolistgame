@@ -1,3 +1,5 @@
 <%# app/views/todo_items/create.turbo_stream.erb %>
+<% @todo_list.reload %>
+<%= turbo_stream.replace dom_id(@todo_list, :counter), partial: "todo_lists/counter", locals: { todo_list: @todo_list } %>
 <%= turbo_stream.append "todo_items_wrapper", @todo_item %>
 <%= turbo_stream.replace "new_todo_item", partial: "todo_items/form", locals: { todo_list: @todo_list, todo_item: TodoItem.new } %>
