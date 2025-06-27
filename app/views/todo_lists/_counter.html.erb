@@ -1,0 +1,5 @@
+<div id="<%= dom_id(todo_list, :counter) %>" class="p-4">
+  <p>
+    <%= todo_list.todo_items.completed.count %> / <%= todo_list.todo_items.count %> concluídas
+  </p>
+</div>
