@@ -1,1 +1,2 @@
+<%= turbo_stream.replace dom_id(@todo_item.todo_list, :counter), partial: "todo_lists/counter", locals: { todo_list: @todo_item.todo_list } %>
 <%= turbo_stream.replace @todo_item %>
