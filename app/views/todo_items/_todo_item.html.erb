@@ -1,0 +1,10 @@
+<%# app/views/todo_items/_todo_item.html.erb %>
+<%= turbo_frame_tag todo_item do %>
+  <div class="flex items-center gap-4 p-4 <%= 'bg-green-100' if todo_item.completed? %>">
+    <input type="checkbox" <%='checked' if todo_item.completed? %>
+    data-controller="checkbox"
+    data-action="change->checkbox#update"
+    data-checkbox-url-value="<%= todo_list_todo_item_path(@todo_list, todo_item) %>">
+      <p><%= todo_item.text %></p>
+  </div>
+<% end %>
