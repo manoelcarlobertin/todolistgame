@@ -4,9 +4,6 @@
   <%# Container principal com melhor espaçamento e centralização %>
   <div class="w-full max-w-4xl mx-auto px-4">
 
-    <%# Opcional: Mover o "notice" para um partial de alertas reutilizável %>
-    <%= render "shared/notice" if notice.present? %>
-
     <%= turbo_frame_tag :new_todo_item, src: new_todo_list_item_path(@todo_list) %>
     <%# 1. Cabeçalho da página: mais limpo e semântico %>
     <div class="flex justify-between items-center mb-6">
