@@ -1,55 +1,64 @@
 class TodoListsController < ApplicationController
-  before_action :authenticate_user! # Exige login
-  before_action :set_todo_list, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!
+  before_action :set_todo_list, only: %i[show edit update destroy todo_items]
 
   def index
-    @todo_lists = current_user.todo_lists # Apenas listas do usuário logado
+    @todo_lists = current_user.todo_lists.order(created_at: :desc)
+  rescue StandardError => e
+    flash[:error] = "Error loading todo lists: #{e.message}"
+    @todo_lists = []
   end
 
   def show
   end
 
   def new
-    @todo_list = TodoList.new
+    @todo_list = current_user.todo_lists.build
   end
 
   def edit
   end
 
   def create
-    @todo_list = current_user.todo_lists.build(todo_list_params) # Associa ao usuário
+    @todo_list = current_user.todo_lists.build(todo_list_params)
 
     if @todo_list.save
-      redirect_to @todo_list, notice: "Todo list was successfully created."
+      redirect_to todo_list_todo_items_path(@todo_list), notice: "Todo list was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /todo_lists/1 or /todo_lists/1.json
   def update
     if @todo_list.update(todo_list_params)
-      redirect_to @todo_list, notice: "Todo list was successfully updated."
+      redirect_to todo_list_todo_items_path(@todo_list), notice: "Todo list was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
-  # DELETE /todo_lists/1 or /todo_lists/1.json
   def destroy
     @todo_list.destroy!
+    redirect_to todo_lists_url, notice: "Todo list was successfully destroyed."
+  rescue StandardError => e
+    flash[:error] = "Error destroying todo list: #{e.message}"
+    redirect_to todo_lists_url
+  end
 
-    redirect_to todo_lists_path, status: :see_other, notice: "Todo list was successfully destroyed."
+  def todo_items
+    @todo_items = @todo_list.todo_items
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_todo_list
-      @todo_list = TodoList.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def todo_list_params
-      params.expect(todo_list: [ :title, :description, :user_id ])
-    end
+  def set_todo_list
+    @todo_list = current_user.todo_lists.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    flash[:error] = "Todo list not found"
+    redirect_to todo_lists_url
+  end
+
+  def todo_list_params
+    params.require(:todo_list).permit(:title, :description)
+  end
 end

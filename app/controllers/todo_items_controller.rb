@@ -4,24 +4,22 @@ class TodoItemsController < ApplicationController
   before_action :set_todo_item, only: [:show, :edit, :update, :destroy]
 
   def index
-    @todo_items = @todo_list.todo_items
+    @todo_items = @todo_list.items # usei o 'alias' lá do 'model todo_list'
   end
 
-  def show
-  end
+  def show;end
 
   def new
-    @todo_item = @todo_list.todo_items.build
+    @todo_item = @todo_list.items.build
   end
 
-  def edit
-  end
+  def edit;end
 
   def create
-    @todo_item = @todo_list.todo_items.build(todo_item_params)
+    @todo_item = @todo_list.items.build(todo_item_params)
 
     if @todo_item.save
-      redirect_to todo_list_todo_items_path(@todo_list), notice: "Todo Item was successfully created."
+      redirect_to todo_list_items_url(@todo_list), notice: "Todo Item was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,27 +27,30 @@ class TodoItemsController < ApplicationController
 
   def update
     if @todo_item.update(todo_item_params)
-      redirect_to todo_list_todo_item_path(@todo_list, @todo_item), notice: "Todo item was successfully updated."
+      redirect_to todo_list_items_url(@todo_list), notice: "Todo item was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @todo_item.destroy!
-    redirect_to todo_list_todo_items_path(@todo_list), notice: "Todo item was successfully destroyed."
+    @todo_item.destroy
+      redirect_to todo_list_items_url(@todo_list), notice: "Todo item was successfully destroyed."
   end
 
   private
-    def set_todo_list
-      @todo_list = current_user.todo_lists.find(params[:todo_list_id])
-    end
+  def set_todo_list
+    @todo_list = Todo_List.find(params[:todo_list_id])
+    # @todo_list = current_user.todo_lists.find(params[:todo_list_id])
+  end
 
-    def set_todo_item
-      @todo_item = @todo_list.todo_items.find(params[:id])
-    end
+  def set_todo_item
+    @todo_item = @todo_list.items.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to todo_list_items_url(@todo_list), alert: "Não há item!"
+  end
 
-    def todo_item_params
-      params.require(:todo_item).permit(:content, :completed)
-    end
+  def todo_item_params
+    params.require(:item).permit(:content, :completed)
+  end
 end
