@@ -1,6 +1,9 @@
 class TodoItemsController < ApplicationController
+  # Primeiro, garanta que o usuário esteja logado
   before_action :authenticate_user!
+  # Depois, execute o método 'set_todo_list' antes das ações listadas
   before_action :set_todo_list
+
   before_action :set_todo_item, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -39,9 +42,13 @@ class TodoItemsController < ApplicationController
   end
 
   private
+
   def set_todo_list
-    @todo_list = Todo_List.find(params[:todo_list_id])
-    # @todo_list = current_user.todo_lists.find(params[:todo_list_id])
+    # Aqui usamos a versão SEGURA da busca!
+    @todo_list = current_user.todo_lists.find(params[:todo_list_id])
+  rescue ActiveRecord::RecordNotFound
+    # Bônus: Tratamento de erro amigável
+    redirect_to todo_lists_path, alert: "A lista de tarefas que você procurava não foi encontrada."
   end
 
   def set_todo_item
@@ -51,6 +58,6 @@ class TodoItemsController < ApplicationController
   end
 
   def todo_item_params
-    params.require(:item).permit(:content, :completed)
+    params.require(:item).permit(:description, :completed_at)
   end
 end

@@ -14,7 +14,7 @@
     <% if @todo_lists.any? %>
       <% @todo_lists.each do |todo_list| %>
         <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render todo_list %>
+          <%= render @todo_list %>
           <div>
             <h2><%#= todo_list.title %></h2>
             <%#= link_to "Listar Itens", todo_list_todo_items_path(todo_list), class: "text-blue-600 hover:underline" %>

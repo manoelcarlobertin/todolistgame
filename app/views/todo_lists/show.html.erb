@@ -1,26 +1,58 @@
-<% content_for :title, "Detalhes" %>
+<%# Define o título da página de forma dinâmica com o título da lista %>
+  <% content_for :title, @todo_list.title %>
 
-<div class="md:w-2/3 w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
+  <%# Container principal com melhor espaçamento e centralização %>
+  <div class="w-full max-w-4xl mx-auto px-4">
 
-  <h1 class="font-bold text-4xl">Detalhes dos itens de cada tarefa de cada usuário</h1>
+    <%# Opcional: Mover o "notice" para um partial de alertas reutilizável %>
+    <%= render "shared/notice" if notice.present? %>
 
-  <%= render @todo_list %>
+    <%= turbo_frame_tag :new_todo_item, src: new_todo_list_item_path(@todo_list) %>
+    <%# 1. Cabeçalho da página: mais limpo e semântico %>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="font-bold text-4xl truncate" title="<%= @todo_list.title %>">
+        <%= @todo_list.title %>
+      </h1>
 
-  <%= render "counter", todo_list: @todo_list %>
+      <%# 2. Ações principais agrupadas e com estilo consistente %>
+      <div class="flex items-center gap-2">
+        <%= link_to "Alterar", edit_todo_list_path(@todo_list),
+          class: "py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-md font-medium text-sm" %>
+          <%= button_to "Deletar", @todo_list, method: :delete,
+            class: "py-2 px-4 text-white bg-red-600 hover:bg-red-700 rounded-md font-medium text-sm",
+            form_class: "m-0", data: {
+            turbo_confirm: "Tem certeza que deseja apagar esta lista e todos os seus itens?" } %>
+      </div>
+    </div>
 
-  <div id="todo_items_wrapper">
-    <%= render @todo_list.todo_items %>
-    <%#= link_to "Listar itens", todo_list_todo_items_path(@todo_list),
-      class: "text-blue-600 hover:underline" %>
+    <%# Renderiza os detalhes da lista (título, descrição, etc.) %>
+    <%= render @todo_list %>
+
+    <%# 3. Container para a adição e listagem de itens %>
+    <div class="mt-8">
+      <h2 class="font-bold text-2xl mb-4">Itens da Tarefa</h2>
+
+      <%# Renderiza o contador de progresso %>
+      <%= render "counter", todo_list: @todo_list %>
+
+      <%# O formulário para um novo item será carregado aqui dentro via Turbo Frame %>
+
+      <%# 4. Formulário e lista de itens agora estão logicamente próximos %>
+      <%= turbo_frame_tag "new_todo_item" do %>
+        <%= render "todo_items/form", todo_list: @todo_list, todo_item: TodoItem.new %>
+      <% end %>
+
+      <%# Wrapper dos itens com ID dinâmico, essencial para o Turbo Stream %>
+
+      <%# 5. ID dinâmico usando dom_id: a melhor prática! %>
+      <div id="<%= dom_id(@todo_list, :todo_items) %>" class="mt-4 space-y-2">
+        <%= render @todo_list.todo_items.order(created_at: :desc) %>
+      </div>
+    </div>
+
+      <%# 6. Link de "Voltar" (ou Cancelar) movido para o final para melhor fluxo %>
+      <div class="mt-8 border-t pt-4">
+        <%= link_to "Voltar", todo_lists_path,
+          class: "text-blue-600 hover:underline" %>
+      </div>
   </div>
-
-  <%= turbo_frame_tag "new_todo_item", src: new_todo_list_todo_item_path(@todo_list) %>
-  <div>
-    <%= link_to "Alterar", edit_todo_list_path(@todo_list), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %> |
-    <%= link_to "Cancelar", todo_lists_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-    <%= button_to "Deletar", @todo_list, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-  </div>
-</div>
